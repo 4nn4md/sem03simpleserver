@@ -5,6 +5,10 @@ import (
 	"log"
 	"net"
 	"sync"
+	"tmp/mycrypt"
+	"tmp/conv"
+	"strings"
+	"strconv"
 )
 
 func main() {
@@ -36,9 +40,27 @@ func main() {
 						}
 						return // fra for løkke
 					}
-					switch msg := string(buf[:n]); msg {
+
+alfLength := len(mycrypt.ALF_SEM03)
+hentetMelding := string(buf[:n])
+dekryptertMelding := mycrypt.Krypter([]rune(hentetMelding), mycrypt.ALF_SEM03, alfLength-4)
+dekryptertString := string(dekryptertMelding)
+
+					switch msg := dekryptertString; msg {
   				        case "ping":
 						_, err = c.Write([]byte("pong"))
+
+
+					case dekryptertString:
+						a1 := strings.Split((msg), ";")
+						a2, err := strconv.ParseFloat(a1[3], 64)
+						a3 := conv.CelsiusToFahrenheit(a2)
+						a4 := strconv.FormatFloat(a3, 'f', 2, 64)
+						_, err = c.Write([]byte(a1[0] + ";" + a1[1] + ";" + a1[2] + ";" + a4))
+							if err != nil {
+								panic(err)
+							}
+
 					default:
 						_, err = c.Write(buf[:n])
 					}
