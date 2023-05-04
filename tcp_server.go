@@ -56,10 +56,18 @@ dekryptertString := string(dekryptertMelding)
 						a2, err := strconv.ParseFloat(a1[3], 64)
 						a3 := conv.CelsiusToFahrenheit(a2)
 						a4 := strconv.FormatFloat(a3, 'f', 2, 64)
-						_, err = c.Write([]byte(a1[0] + ";" + a1[1] + ";" + a1[2] + ";" + a4))
+						a5 := (a1[0] + ";" + a1[1] + ";" + a1[2] + ";" + a4)
+
 							if err != nil {
 								panic(err)
 							}
+
+
+					//kryptert tilbake
+					kryptertBobRune := mycrypt.Krypter([]rune(a5), mycrypt.ALF_SEM03, 4)
+					kryptertBobString := string(kryptertBobRune)
+
+					_, err = c.Write([]byte(kryptertBobString))
 
 					default:
 						_, err = c.Write(buf[:n])
